@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>청주잇츠</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            amber: { DEFAULT: '#c8762a', dark: '#a05d1c' },
+            cream: '#fdf6ec',
+            ink: '#2b1d0e',
+            muted: '#8a7060',
+            warm: '#f5ebe0',
+            line: '#e8d9c8',
+          },
+          fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; }
+    .card { animation: fadeUp .25s ease both; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .loading-bar { position:fixed; top:0; left:0; height:3px; background:#c8762a; width:0; transition:width .4s; z-index:9999; }
+    .loading-bar.on { width:70%; }
+    .loading-bar.done { width:100%; opacity:0; transition:width .2s,opacity .4s .2s; }
+    ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-thumb { background:#e8d9c8; border-radius:4px; }
+  </style>
+</head>
+<body class="bg-cream text-ink min-h-screen flex flex-col">
+
+<div class="loading-bar" id="bar"></div>
+
+<!-- Header -->
+<header class="bg-ink text-cream px-5 h-14 flex items-center gap-3 sticky top-0 z-50 shadow-md">
+  <div>
+    <div class="text-xl font-bold tracking-tight">청주 <span class="text-amber">잇</span>츠</div>
+    <div class="text-xs text-muted tracking-widest -mt-0.5">CHEONGJU EATS</div>
+  </div>
+  <div class="ml-auto flex items-center gap-2">
+    <span id="status-badge" class="text-xs text-muted bg-white/10 px-3 py-1 rounded-full"></span>
+  </div>
+</header>
+
+<!-- Toolbar -->
+<div class="bg-white border-b border-line px-4 py-2.5 flex flex-wrap gap-2 items-center sticky top-14 z-40">
+  <!-- Category filters -->
+  <div id="cat-filters" class="flex gap-1.5 flex-wrap">
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber active-cat" data-cat="">전체</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="한식">🍚 한식</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="중식">🥢 중식</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="일식">🍣 일식</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="양식">🍝 양식</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="카페">☕ 카페</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="치킨">🍗 치킨</button>
+    <button class="cat-btn px-3 py-1 rounded-full text-xs border border-line bg-white text-muted transition-all hover:border-amber hover:text-amber" data-cat="분식">🍜 분식</button>
+  </div>
+  <div class="w-px h-5 bg-line hidden sm:block"></div>
+  <!-- Search -->
+  <div class="relative flex items-center">
+    <svg class="absolute left-2.5 text-muted w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search" type="search" placeholder="가게명 검색…" autocomplete="off"
+      class="pl-7 pr-3 py-1.5 border border-line rounded-full text-xs bg-white outline-none focus:border-amber w-40 transition-colors" />
+  </div>
+  <!-- Count -->
+  <span id="count-label" class="ml-auto text-xs text-muted font-medium"></span>
+</div>
+
+<!-- Grid -->
+<main class="flex-1 px-4 py-5">
+  <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+  <div id="empty" class="hidden flex-col items-center justify-center py-24 text-muted gap-3">
+    <span class="text-5xl opacity-40">🍽️</span>
+    <p class="text-sm">검색 결과가 없어요</p>
+  </div>
+  <div id="loading-placeholder" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <!-- skeleton cards -->
+    <div class="bg-white rounded-2xl border border-line p-5 animate-pulse h-40"></div>
+    <div class="bg-white rounded-2xl border border-line p-5 animate-pulse h-40"></div>
+    <div class="bg-white rounded-2xl border border-line p-5 animate-pulse h-40"></div>
+    <div class="bg-white rounded-2xl border border-line p-5 animate-pulse h-40 hidden xl:block"></div>
+  </div>
+</main>
+
+<footer class="text-center text-xs text-muted py-4 border-t border-line">
+  청주잇츠 &copy; 2025 — 청주 맛집 탐방
+</footer>
+
+<style>
+  .cat-btn.active-cat { background: #c8762a; border-color: #c8762a; color: #fff; font-weight: 500; }
+</style>
+
+<script>
+  let allData = [];
+  let activeCategory = '';
+  let searchQ = '';
+
+  const bar = document.getElementById('bar');
+  function startBar() { bar.className = 'loading-bar on'; }
+  function doneBar() { bar.className = 'loading-bar done'; setTimeout(() => bar.className = 'loading-bar', 700); }
+
+  const categoryEmoji = {
+    '한식':'🍚','중식':'🥢','일식':'🍣','양식':'🍝','카페':'☕','치킨':'🍗','분식':'🍜',
+    '패스트푸드':'🍔','피자':'🍕','술집':'🍺','고기':'🥩','해산물':'🦞','디저트':'🍰'
+  };
+
+  function categoryColor(cat) {
+    const map = {
+      '한식':'bg-orange-50 text-orange-700 border-orange-200',
+      '중식':'bg-red-50 text-red-700 border-red-200',
+      '일식':'bg-pink-50 text-pink-700 border-pink-200',
+      '양식':'bg-purple-50 text-purple-700 border-purple-200',
+      '카페':'bg-yellow-50 text-yellow-700 border-yellow-200',
+      '치킨':'bg-amber-50 text-amber-700 border-amber-200',
+      '분식':'bg-lime-50 text-lime-700 border-lime-200',
+    };
+    return map[cat] || 'bg-warm text-amber-dark border-line';
+  }
+
+  function buildCard(r, idx) {
+    const div = document.createElement('div');
+    div.className = 'card bg-white rounded-2xl border border-line p-5 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-amber flex flex-col gap-3';
+    div.style.animationDelay = `${idx * 25}ms`;
+
+    const emoji = categoryEmoji[r.category] || '🍽️';
+    const catColor = categoryColor(r.category);
+    const catBadge = r.category
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border font-medium ${catColor}">${emoji} ${r.category}</span>`
+      : '';
+
+    const stars = r.rank_score ? '⭐'.repeat(Math.min(5, Math.round(r.rank_score))) : '';
+    const franchise = r.is_franchise ? '<span class="text-xs text-blue-500 font-medium">프랜차이즈</span>' : '';
+
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="font-semibold text-base leading-tight text-ink">${r.name}</h3>
+        ${catBadge}
+      </div>
+      <div class="flex flex-col gap-1.5 flex-1">
+        ${r.address ? `
+        <div class="flex items-start gap-1.5 text-xs text-muted">
+          <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span class="leading-relaxed">${r.address}</span>
+        </div>` : ''}
+        ${r.phone ? `
+        <div class="flex items-center gap-1.5 text-xs text-muted">
+          <svg class="w-3.5 h-3.5 flex-shrink-0 text-amber" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <a href="tel:${r.phone}" class="hover:text-amber transition-colors" onclick="event.stopPropagation()">${r.phone}</a>
+        </div>` : ''}
+      </div>
+      <div class="flex items-center gap-2 pt-1 border-t border-line/60">
+        ${stars ? `<span class="text-xs">${stars}</span>` : ''}
+        ${franchise}
+        ${r.place_url ? `<a href="${r.place_url}" target="_blank" onclick="event.stopPropagation()"
+          class="ml-auto text-xs text-amber hover:text-amber-dark font-medium flex items-center gap-0.5 transition-colors">
+          카카오맵 →
+        </a>` : ''}
+      </div>`;
+    return div;
+  }
+
+  function render() {
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    grid.innerHTML = '';
+
+    const filtered = allData.filter(r => {
+      const matchCat = !activeCategory || (r.category || '').includes(activeCategory);
+      const matchQ = !searchQ || r.name.includes(searchQ) || (r.address || '').includes(searchQ);
+      return matchCat && matchQ;
+    });
+
+    document.getElementById('count-label').textContent = `총 ${filtered.length.toLocaleString()}곳`;
+
+    if (!filtered.length) {
+      empty.classList.remove('hidden');
+      empty.classList.add('flex');
+      return;
+    }
+    empty.classList.add('hidden');
+    empty.classList.remove('flex');
+
+    filtered.forEach((r, i) => grid.appendChild(buildCard(r, i)));
+  }
+
+  async function load() {
+    startBar();
+    document.getElementById('status-badge').textContent = '불러오는 중…';
+    document.getElementById('loading-placeholder').classList.remove('hidden');
+    document.getElementById('grid').classList.add('hidden');
+    try {
+      const res = await fetch('/restaurants');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allData = await res.json();
+      document.getElementById('status-badge').textContent = `총 ${allData.length.toLocaleString()}곳`;
+      document.getElementById('loading-placeholder').classList.add('hidden');
+      document.getElementById('grid').classList.remove('hidden');
+      render();
+    } catch (e) {
+      document.getElementById('status-badge').textContent = '로드 실패';
+      document.getElementById('loading-placeholder').innerHTML =
+        `<div class="col-span-full text-center py-20 text-muted text-sm">데이터를 불러오지 못했어요.<br><span class="text-xs opacity-70">${e.message}</span></div>`;
+    } finally {
+      doneBar();
+    }
+  }
+
+  // Category filter
+  document.getElementById('cat-filters').addEventListener('click', e => {
+    const btn = e.target.closest('.cat-btn');
+    if (!btn) return;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active-cat'));
+    btn.classList.add('active-cat');
+    activeCategory = btn.dataset.cat;
+    render();
+  });
+
+  // Search
+  let searchTimer;
+  document.getElementById('search').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { searchQ = e.target.value.trim(); render(); }, 200);
+  });
+
+  load();
+</script>
+</body>
+</html>

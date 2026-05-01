@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql *)",
+      "PowerShell(mysql *)",
+      "PowerShell(Get-ItemProperty *)"
+    ]
+  }
+}

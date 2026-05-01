@@ -1,0 +1,67 @@
+[
+  {
+    "kakao_id": "1842301567",
+    "name": "충대 순대국밥",
+    "category": "한식",
+    "address": "충청북도 청주시 서원구 충대로 52",
+    "phone": "043-265-1234",
+    "place_url": "https://place.map.kakao.com/1842301567",
+    "lat": 36.6291,
+    "lng": 127.4558,
+    "price_range": "low",
+    "rank_score": null,
+    "is_franchise": 0
+  },
+  {
+    "kakao_id": "1753489021",
+    "name": "개신동 중화반점",
+    "category": "중식",
+    "address": "충청북도 청주시 서원구 개신동 23-4",
+    "phone": "043-266-5678",
+    "place_url": "https://place.map.kakao.com/1753489021",
+    "lat": 36.6278,
+    "lng": 127.4573,
+    "price_range": "low",
+    "rank_score": null,
+    "is_franchise": 0
+  },
+  {
+    "kakao_id": "1965032784",
+    "name": "피자파티 충북대점",
+    "category": "양식",
+    "address": "충청북도 청주시 서원구 충대로 101",
+    "phone": "043-267-9012",
+    "place_url": "https://place.map.kakao.com/1965032784",
+    "lat": 36.6305,
+    "lng": 127.4541,
+    "price_range": "mid",
+    "rank_score": null,
+    "is_franchise": 1
+  },
+  {
+    "kakao_id": "1628174390",
+    "name": "개신 해물찜 본가",
+    "category": "해산물",
+    "address": "충청북도 청주시 서원구 개신동 87-2",
+    "phone": "043-268-3456",
+    "place_url": "https://place.map.kakao.com/1628174390",
+    "lat": 36.6263,
+    "lng": 127.4590,
+    "price_range": "high",
+    "rank_score": null,
+    "is_franchise": 0
+  },
+  {
+    "kakao_id": "1709825613",
+    "name": "충대로 참숯 삼겹살",
+    "category": "한식",
+    "address": "충청북도 청주시 서원구 충대로 78",
+    "phone": "043-264-7890",
+    "place_url": "https://place.map.kakao.com/1709825613",
+    "lat": 36.6298,
+    "lng": 127.4562,
+    "price_range": "mid",
+    "rank_score": null,
+    "is_franchise": 0
+  }
+]

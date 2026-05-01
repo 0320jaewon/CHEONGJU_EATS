@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>청주잇츠</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream:#fdf6ec; --warm:#f5ebe0; --amber:#c8762a; --amber-d:#a05d1c;
+      --rust:#d4522a; --ink:#2b1d0e; --muted:#8a7060; --line:#e8d9c8;
+      --white:#fffdf9; --shadow:0 2px 12px rgba(43,29,14,.10);
+      --shadow-hover:0 6px 24px rgba(43,29,14,.18); --radius:14px;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Noto Sans KR',sans-serif; background:var(--cream); color:var(--ink); display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+
+    header { background:var(--ink); color:var(--cream); padding:0 20px; height:56px; display:flex; align-items:center; gap:12px; flex-shrink:0; z-index:10; }
+    .logo-mark { font-family:'Noto Serif KR',serif; font-size:22px; font-weight:700; letter-spacing:-.5px; }
+    .logo-mark span { color:var(--amber); }
+    .header-sub { font-size:11px; color:var(--muted); letter-spacing:.5px; margin-top:2px; }
+    .header-right { margin-left:auto; display:flex; align-items:center; gap:8px; }
+    #status { font-size:12px; color:var(--muted); background:rgba(255,255,255,.07); padding:4px 10px; border-radius:20px; }
+
+    .toolbar { background:var(--white); border-bottom:1px solid var(--line); padding:10px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; flex-shrink:0; }
+    .cat-filters { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .cat-btn { padding:5px 13px; border-radius:20px; border:1.5px solid var(--line); background:var(--white); color:var(--muted); font-size:13px; font-family:'Noto Sans KR',sans-serif; cursor:pointer; transition:all .18s; white-space:nowrap; }
+    .cat-btn:hover { border-color:var(--amber); color:var(--amber); }
+    .cat-btn.active { background:var(--amber); border-color:var(--amber); color:#fff; font-weight:500; }
+    .toolbar-divider { width:1px; height:22px; background:var(--line); flex-shrink:0; }
+    .search-wrap { position:relative; display:flex; align-items:center; }
+    .search-wrap svg { position:absolute; left:10px; color:var(--muted); pointer-events:none; }
+    #q { padding:6px 12px 6px 32px; border:1.5px solid var(--line); border-radius:20px; font-size:13px; font-family:'Noto Sans KR',sans-serif; background:var(--white); color:var(--ink); width:180px; outline:none; transition:border-color .2s; }
+    #q:focus { border-color:var(--amber); }
+    .sort-wrap select { padding:6px 10px; border:1.5px solid var(--line); border-radius:20px; font-size:13px; font-family:'Noto Sans KR',sans-serif; background:var(--white); color:var(--ink); outline:none; cursor:pointer; }
+    .btn { padding:6px 14px; border-radius:20px; border:none; font-size:13px; font-family:'Noto Sans KR',sans-serif; cursor:pointer; transition:all .18s; font-weight:500; }
+    .btn-primary { background:var(--amber); color:#fff; }
+    .btn-primary:hover { background:var(--amber-d); }
+    .btn-ghost { background:transparent; border:1.5px solid var(--line); color:var(--muted); }
+    .btn-ghost:hover { border-color:var(--amber); color:var(--amber); }
+
+    .body-wrap { flex:1; display:flex; overflow:hidden; }
+    .side { width:340px; flex-shrink:0; background:var(--white); border-right:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
+
+    .route-box { padding:12px 14px; background:var(--warm); border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:6px; }
+    .route-box label { font-size:11px; font-weight:500; color:var(--muted); letter-spacing:.4px; }
+    .route-inputs { display:flex; flex-direction:column; gap:5px; }
+    .route-input-row { display:flex; align-items:center; gap:6px; position:relative; }
+    .route-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .route-dot.start { background:var(--amber); }
+    .route-dot.end { background:var(--rust); }
+    .route-input-row input { flex:1; padding:6px 10px; border:1.5px solid var(--line); border-radius:8px; font-size:12px; font-family:'Noto Sans KR',sans-serif; background:var(--white); outline:none; transition:border-color .2s; }
+    .route-input-row input:focus { border-color:var(--amber); }
+    .route-actions { display:flex; gap:6px; justify-content:flex-end; }
+
+    .list-header { padding:10px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); flex-shrink:0; }
+    .list-header-title { font-family:'Noto Serif KR',serif; font-size:13px; font-weight:600; color:var(--ink); }
+    .list-count { font-size:11px; color:var(--muted); }
+
+    .list { flex:1; overflow-y:auto; padding:8px 10px; display:flex; flex-direction:column; gap:6px; }
+    .list::-webkit-scrollbar { width:4px; }
+    .list::-webkit-scrollbar-thumb { background:var(--line); border-radius:4px; }
+
+    .card { background:var(--white); border:1.5px solid var(--line); border-radius:var(--radius); padding:11px 13px; cursor:pointer; transition:all .2s; animation:fadeUp .25s ease both; }
+    .card:hover { border-color:var(--amber); box-shadow:var(--shadow-hover); transform:translateY(-1px); }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:4px; }
+    .card-name { font-size:14px; font-weight:500; color:var(--ink); line-height:1.3; }
+    .cat-tag { flex-shrink:0; padding:2px 8px; border-radius:10px; font-size:11px; background:var(--warm); color:var(--amber-d); border:1px solid #e8d0b0; font-weight:500; }
+    .card-addr { font-size:12px; color:var(--muted); line-height:1.4; }
+    .card-bottom { margin-top:6px; display:flex; align-items:center; gap:10px; }
+    .card-phone { font-size:11px; color:var(--muted); }
+    .card-dist { margin-left:auto; font-size:12px; color:var(--amber); font-weight:500; }
+    .card-nav-btn { font-size:11px; padding:3px 8px; border-radius:8px; border:1px solid var(--line); background:var(--cream); color:var(--muted); cursor:pointer; transition:all .15s; }
+    .card-nav-btn:hover { border-color:var(--amber); color:var(--amber); }
+
+    .empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--muted); padding:40px 20px; text-align:center; }
+    .empty-icon { font-size:36px; opacity:.5; }
+    .empty-text { font-size:13px; }
+
+    .pager-row { display:flex; gap:4px; align-items:center; justify-content:center; padding:8px 0; border-top:1px solid var(--line); flex-shrink:0; }
+    .pager-row button { min-width:30px; height:30px; border:1.5px solid var(--line); border-radius:8px; background:var(--white); color:var(--muted); font-size:13px; cursor:pointer; transition:all .15s; font-family:'Noto Sans KR',sans-serif; }
+    .pager-row button:hover { border-color:var(--amber); color:var(--amber); }
+    .pager-row button.active { background:var(--amber); border-color:var(--amber); color:#fff; }
+
+    #map { flex:1; min-width:0; }
+
+    .toolbar-sub { background:var(--cream); border-bottom:1px solid var(--line); padding:7px 16px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; flex-shrink:0; }
+    .filter-label { font-size:11px; color:var(--muted); font-weight:500; letter-spacing:.3px; white-space:nowrap; }
+    .price-filters { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .price-btn { padding:4px 12px; border-radius:20px; border:1.5px solid var(--line); background:var(--white); color:var(--muted); font-size:12px; font-family:'Noto Sans KR',sans-serif; cursor:pointer; transition:all .18s; white-space:nowrap; }
+    .price-btn:hover { border-color:var(--rust); color:var(--rust); }
+    .price-btn.active { background:var(--rust); border-color:var(--rust); color:#fff; font-weight:500; }
+
+    .loading-bar { position:fixed; top:0; left:0; height:3px; background:var(--amber); width:0%; transition:width .4s ease; z-index:9999; }
+    .loading-bar.active { width:60%; }
+    .loading-bar.done { width:100%; opacity:0; transition:width .2s,opacity .4s .2s; }
+  </style>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=ec7a521b62d776eb9f9d4089423e63da&libraries=clusterer"></script>
+</head>
+<body>
+
+<div class="loading-bar" id="loading-bar"></div>
+
+<header>
+  <div>
+    <div class="logo-mark">청주 <span>잇</span>츠</div>
+    <div class="header-sub">CHEONGJU EATS</div>
+  </div>
+  <div class="header-right">
+    <span id="status"></span>
+    <button class="btn btn-ghost" id="btn-center">📍 내 위치</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="cat-filters" id="cat-filters">
+    <button class="cat-btn active" data-cat="">전체</button>
+    <button class="cat-btn" data-cat="한식">🍚 한식</button>
+    <button class="cat-btn" data-cat="중식">🥢 중식</button>
+    <button class="cat-btn" data-cat="일식">🍣 일식</button>
+    <button class="cat-btn" data-cat="양식">🍝 양식</button>
+    <button class="cat-btn" data-cat="카페">☕ 카페</button>
+    <button class="cat-btn" data-cat="치킨">🍗 치킨</button>
+    <button class="cat-btn" data-cat="분식">🍜 분식</button>
+  </div>
+  <div class="toolbar-divider"></div>
+  <div class="search-wrap">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="q" type="search" placeholder="가게명 검색…" autocomplete="off" />
+  </div>
+  <div class="sort-wrap">
+    <select id="order">
+      <option value="name">가나다순</option>
+      <option value="distance" selected>거리순</option>
+      <option value="rank">🏆 랭킹순</option>
+    </select>
+  </div>
+  <button class="btn btn-primary" id="btn-near">🎯 내 위치 기준</button>
+  <button class="btn btn-ghost" id="btn-refresh">↺ 새로고침</button>
+</div>
+
+<div class="toolbar-sub">
+  <span class="filter-label">💰 가격대</span>
+  <div class="price-filters" id="price-filters">
+    <button class="price-btn active" data-price="">전체</button>
+    <button class="price-btn" data-price="low">~1만원</button>
+    <button class="price-btn" data-price="mid">1~2만원</button>
+    <button class="price-btn" data-price="high">2만원+</button>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <div class="side">
+    <div class="route-box">
+      <label>길찾기</label>
+      <div class="route-inputs">
+        <div class="route-input-row">
+          <span class="route-dot start"></span>
+          <input id="origin" placeholder="출발지 (주소 또는 현재 위치)" autocomplete="off" />
+        </div>
+        <div class="route-input-row">
+          <span class="route-dot end"></span>
+          <input id="dest" placeholder="도착지 (목록에서 클릭 또는 입력)" autocomplete="off" />
+        </div>
+      </div>
+      <div class="route-actions">
+        <button class="btn btn-ghost" id="btn-clear-route">초기화</button>
+        <button class="btn btn-primary" id="btn-route">길찾기</button>
+      </div>
+    </div>
+    <div class="list-header">
+      <span class="list-header-title">맛집 목록</span>
+      <span class="list-count" id="list-count">—</span>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="pager-row" id="pager"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<script>
+  let map, clusterer;
+  let page=0, limit=20, total=0, totalPages=1;
+  let userLat=null, userLng=null, userMarker=null;
+  let currentItems=[], routeLines=[], suspendRefresh=false;
+  let selectedCategory='', selectedPrice='';
+
+  function loadingStart(){ document.getElementById('loading-bar').className='loading-bar active'; }
+  function loadingDone(){
+    const b=document.getElementById('loading-bar');
+    b.className='loading-bar done';
+    setTimeout(()=>{ b.className='loading-bar'; },700);
+  }
+
+  document.getElementById('cat-filters').addEventListener('click',e=>{
+    const btn=e.target.closest('.cat-btn');
+    if(!btn) return;
+    document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedCategory=btn.dataset.cat;
+    page=0; refresh();
+  });
+
+  document.getElementById('price-filters').addEventListener('click',e=>{
+    const btn=e.target.closest('.price-btn');
+    if(!btn) return;
+    document.querySelectorAll('.price-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedPrice=btn.dataset.price;
+    page=0; refresh();
+  });
+
+  function initMap(){
+    map=new kakao.maps.Map(document.getElementById('map'),{center:new kakao.maps.LatLng(36.635,127.491),level:7});
+    clusterer=new kakao.maps.MarkerClusterer({
+      map,averageCenter:true,minLevel:6,
+      styles:[{width:'46px',height:'46px',background:'rgba(200,118,42,.9)',borderRadius:'23px',color:'#fff',textAlign:'center',lineHeight:'46px',fontSize:'14px',fontWeight:'600'}]
+    });
+    kakao.maps.event.addListener(map,'idle',()=>{ if(!suspendRefresh){page=0;refresh();} });
+  }
+
+  function currentBBox(){
+    const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();
+    return `${sw.getLng()},${sw.getLat()},${ne.getLng()},${ne.getLat()}`;
+  }
+
+  async function fetchJSON(url){
+    const r=await fetch(url,{headers:{Accept:'application/json'}});
+    const t=await r.text();
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return JSON.parse(t);
+  }
+
+  function renderListAndMarkers(data){
+    clusterer.clear();
+    const listEl=document.getElementById('list');
+    listEl.innerHTML='';
+    currentItems=data.items||[];
+    const markers=[];
+
+    if(!currentItems.length){
+      listEl.innerHTML=`<div class="empty"><div class="empty-icon">🍽️</div><div class="empty-text">이 지역에 등록된 맛집이 없어요.<br>지도를 이동하거나 필터를 바꿔보세요.</div></div>`;
+      return;
+    }
+
+    currentItems.forEach((row,idx)=>{
+      const pos=new kakao.maps.LatLng(row.lat,row.lng);
+      const marker=new kakao.maps.Marker({position:pos});
+      markers.push(marker);
+      const dist=row.distance!=null?`${(row.distance/1000).toFixed(2)}km`:null;
+
+      const iw=new kakao.maps.InfoWindow({
+        content:`<div style="padding:10px 13px;font-size:13px;min-width:180px;font-family:'Noto Sans KR',sans-serif;">
+          <b style="font-size:14px;">${row.name}</b>
+          ${row.category?`<span style="margin-left:6px;padding:1px 7px;border-radius:8px;font-size:11px;background:#f5ebe0;color:#a05d1c;">${row.category}</span>`:''}
+          <div style="color:#8a7060;font-size:12px;margin-top:4px;">${row.address||''}</div>
+          ${dist?`<div style="color:#c8762a;font-size:12px;font-weight:500;">📍 ${dist}</div>`:''}
+          ${row.phone?`<div style="color:#8a7060;font-size:12px;">☎ ${row.phone}</div>`:''}
+        </div>`
+      });
+      kakao.maps.event.addListener(marker,'mouseover',()=>iw.open(map,marker));
+      kakao.maps.event.addListener(marker,'mouseout',()=>iw.close());
+
+      const card=document.createElement('div');
+      card.className='card';
+      card.style.animationDelay=`${idx*30}ms`;
+      card.innerHTML=`
+        <div class="card-top">
+          <div class="card-name">${row.name}</div>
+          ${row.category?`<span class="cat-tag">${row.category}</span>`:''}
+        </div>
+        <div class="card-addr">${row.address||'주소 정보 없음'}</div>
+        <div class="card-bottom">
+          ${row.phone?`<span class="card-phone">☎ ${row.phone}</span>`:''}
+          ${dist?`<span class="card-dist">📍 ${dist}</span>`:''}
+          <button class="card-nav-btn">길찾기</button>
+        </div>`;
+
+      card.querySelector('.card-nav-btn').addEventListener('click',e=>{
+        e.stopPropagation();
+        document.getElementById('dest').value=`${row.lat},${row.lng}`;
+      });
+      card.addEventListener('click',()=>{ map.panTo(pos); iw.open(map,marker); });
+      listEl.appendChild(card);
+    });
+
+    clusterer.addMarkers(markers);
+    if(userMarker) userMarker.setMap(map);
+  }
+
+  function renderPager(){
+    const pager=document.getElementById('pager');
+    pager.innerHTML='';
+    const G=5,start=Math.floor(page/G)*G,end=Math.min(start+G,totalPages);
+    if(start>0){const b=document.createElement('button');b.textContent='‹';b.onclick=()=>{page=start-1;refresh();};pager.appendChild(b);}
+    for(let i=start;i<end;i++){
+      const b=document.createElement('button');b.textContent=i+1;
+      if(i===page)b.classList.add('active');
+      b.onclick=()=>{page=i;refresh();};
+      pager.appendChild(b);
+    }
+    if(end<totalPages){const b=document.createElement('button');b.textContent='›';b.onclick=()=>{page=end;refresh();};pager.appendChild(b);}
+  }
+
+  async function refresh(){
+    loadingStart();
+    document.getElementById('status').textContent='불러오는 중…';
+    const params=new URLSearchParams();
+    params.set('bbox',currentBBox());params.set('limit',limit);params.set('page',page);
+    const order=document.getElementById('order').value;
+    const q=document.getElementById('q').value.trim();
+    if(order) params.set('order',order);
+    if(q) params.set('q',q);
+    if(selectedCategory) params.set('category',selectedCategory);
+    if(selectedPrice) params.set('price_range',selectedPrice);
+    if(order==='distance'&&userLat&&userLng){params.set('lat',userLat);params.set('lng',userLng);}
+    try{
+      const data=await fetchJSON('/api/restaurants?'+params.toString());
+      total=data.total||0;totalPages=Math.max(1,Math.ceil(total/limit));
+      document.getElementById('status').textContent=`총 ${total.toLocaleString()}곳`;
+      document.getElementById('list-count').textContent=`${page+1} / ${totalPages} 페이지`;
+      renderListAndMarkers(data);renderPager();
+    }catch(e){
+      document.getElementById('status').textContent='로드 실패';
+    }finally{ loadingDone(); }
+  }
+
+  function clearRoute(){routeLines.forEach(l=>l.setMap(null));routeLines=[];}
+
+  window.addEventListener('load',()=>{
+    initMap(); refresh();
+    document.getElementById('btn-refresh').onclick=()=>{page=0;refresh();};
+    document.getElementById('order').onchange=()=>{page=0;refresh();};
+    document.getElementById('q').oninput=()=>{page=0;refresh();};
+
+    document.getElementById('btn-near').onclick=()=>{
+      navigator.geolocation.getCurrentPosition(pos=>{
+        userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+        const p=new kakao.maps.LatLng(userLat,userLng);
+        map.panTo(p);
+        if(!userMarker){userMarker=new kakao.maps.Marker({position:p});userMarker.setMap(map);}
+        else{userMarker.setPosition(p);}
+        document.getElementById('order').value='distance';page=0;refresh();
+      },()=>alert('위치 정보를 가져올 수 없어요.'));
+    };
+
+    document.getElementById('btn-center').onclick=()=>{
+      if(userLat&&userLng){map.panTo(new kakao.maps.LatLng(userLat,userLng));}
+      else{document.getElementById('btn-near').click();}
+    };
+
+    document.getElementById('btn-route').onclick=async()=>{
+      const originVal=document.getElementById('origin').value.trim();
+      const destVal=document.getElementById('dest').value.trim();
+      if(!destVal) return alert('도착지를 입력하세요.');
+      clearRoute();
+      const params=new URLSearchParams();
+      params.set('origin',originVal||`${map.getCenter().getLat()},${map.getCenter().getLng()}`);
+      params.set('dest',destVal);
+      suspendRefresh=true;
+      try{
+        const data=await fetch('/api/route?'+params.toString()).then(r=>r.json());
+        suspendRefresh=false;
+        const coords=[];
+        (data.routes?.[0]?.sections||[]).forEach(sec=>{
+          (sec.roads||[]).forEach(r=>{
+            const v=r.vertexes||[];
+            for(let i=0;i<v.length;i+=2){coords.push(new kakao.maps.LatLng(v[i+1],v[i]));}
+          });
+        });
+        if(coords.length){
+          routeLines.push(new kakao.maps.Polyline({map,path:coords,strokeWeight:5,strokeColor:'#c8762a',strokeOpacity:.9}));
+        }
+      }catch(e){suspendRefresh=false;alert('길찾기 오류: '+e.message);}
+    };
+
+    document.getElementById('btn-clear-route').onclick=()=>{
+      clearRoute();
+      document.getElementById('origin').value='';
+      document.getElementById('dest').value='';
+    };
+  });
+</script>
+</body>
+</html>
